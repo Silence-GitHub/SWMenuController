@@ -119,8 +119,9 @@ class SWMenuController: UIView {
         currentMenuPage = 0
         menuPageViews.forEach { $0.removeFromSuperview() }
         menuPageViews.removeAll()
+        menuButtons.removeAll()
         
-        var menuSizeList: [CGSize] = []
+        var menuWidthList: [CGFloat] = []
         var totalWidth: CGFloat = 0
         menuItems.forEach { (item) in
             var title = item.title
@@ -134,8 +135,8 @@ class SWMenuController: UIView {
                                                context: nil).width + 20
             if itemWidth < kMenuMinWidth { itemWidth = kMenuMinWidth }
             totalWidth += itemWidth
-            if !menuSizeList.isEmpty { totalWidth += kMenuSpace }
-            menuSizeList.append(CGSize(width: itemWidth, height: kMenuHeight))
+            if !menuWidthList.isEmpty { totalWidth += kMenuSpace }
+            menuWidthList.append(itemWidth)
         }
         
         let contentViewWidth = min(totalWidth, kContentViewMaxWidth)
@@ -175,16 +176,16 @@ class SWMenuController: UIView {
             var startIndex: Int = 0
             var endIndex: Int = 0
             var accumulatedWidth: CGFloat = 0
-            let tempList = menuSizeList
-            for (i, menuSize) in tempList.enumerated() {
+            let tempList = menuWidthList
+            for (i, menuWidth) in tempList.enumerated() {
                 let pageMaxWidth = startIndex == 0 ? firstPageWidth : restPageWidth
-                accumulatedWidth += menuSize.width
+                accumulatedWidth += menuWidth
                 if i != 0 {
                     accumulatedWidth += kMenuSpace
                 }
-                if accumulatedWidth > pageMaxWidth || i == menuSizeList.count - 1 {
+                if accumulatedWidth > pageMaxWidth || i == menuWidthList.count - 1 {
                     if accumulatedWidth > pageMaxWidth {
-                        accumulatedWidth -= menuSize.width + kMenuSpace
+                        accumulatedWidth -= menuWidth + kMenuSpace
                         endIndex = i
                     } else {
                         endIndex = i + 1 // = count
@@ -201,19 +202,19 @@ class SWMenuController: UIView {
                     }
                     var buttonX: CGFloat = 0
                     for index in startIndex..<endIndex {
-                        var size = menuSizeList[index]
-                        size.width += widthToAdd
-                        menuSizeList[index] = size
+                        var width = menuWidthList[index]
+                        width += widthToAdd
+//                        menuWidthList[index] = width
                         let button = produceMenuButton()
-                        button.frame = CGRect(x: buttonX, y: 0, width: size.width, height: size.height)
+                        button.frame = CGRect(x: buttonX, y: 0, width: width, height: kMenuHeight)
                         button.setTitle(menuItems[index].title, for: .normal)
                         pageView.addSubview(button)
                         menuButtons.append(button)
-                        buttonX += size.width + kMenuSpace
+                        buttonX += width + kMenuSpace
                     }
                     menuContentView.addSubview(pageView)
                     menuPageViews.append(pageView)
-                    accumulatedWidth = menuSize.width
+                    accumulatedWidth = menuWidth
                     startIndex = endIndex
                 }
             }
@@ -224,11 +225,11 @@ class SWMenuController: UIView {
             var buttonX: CGFloat = 0
             for (i, item) in menuItems.enumerated() {
                 let button = produceMenuButton()
-                button.frame = CGRect(x: buttonX, y: 0, width: menuSizeList[i].width, height: kMenuHeight)
+                button.frame = CGRect(x: buttonX, y: 0, width: menuWidthList[i], height: kMenuHeight)
                 button.setTitle(item.title, for: .normal)
                 pageView.addSubview(button)
                 menuButtons.append(button)
-                buttonX += menuSizeList[i].width + kMenuSpace
+                buttonX += menuWidthList[i] + kMenuSpace
             }
             menuContentView.addSubview(pageView)
             menuPageViews.append(pageView)
