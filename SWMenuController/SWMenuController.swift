@@ -15,6 +15,7 @@ private let kMenuSpace: CGFloat = 0.5
 private let kMenuHeight: CGFloat = 36
 private let kMenuMinWidth: CGFloat = 50
 private let kMenuMaxWordCount: Int = 15
+private let kMenuFont: UIFont = UIFont.systemFont(ofSize: 15)
 private let kArrowWidth: CGFloat = 19
 private let kArrowHeight: CGFloat = 9
 private let kContentViewArrowLeadingTrailingSpace: CGFloat = 5
@@ -26,7 +27,6 @@ private let kTargetPointMaxX: CGFloat = kArrowMaxX + kArrowWidth / 2
 class SWMenuController: UIView {
 
     var menuItems: [SWMenuItem] = [] // all menu items
-//    var menuSizeList: [CGSize] = []
     
     private var targetPoint: CGPoint = .zero // in window
     private var arrowDown: Bool = true
@@ -87,7 +87,7 @@ class SWMenuController: UIView {
     @objc private func scrollButtonClicked(_ button: UIButton) {
         switch button {
         case scrollRightButton:
-            if currentMenuPage + 1 > menuItems.count - 1 { return }
+            if currentMenuPage + 1 > menuPageViews.count - 1 { return }
             currentMenuPage += 1
         default:
             if currentMenuPage - 1 < 0 { return }
@@ -130,7 +130,7 @@ class SWMenuController: UIView {
             var itemWidth = title.boundingRect(with: CGSize(width: CGFloat.infinity,
                                                             height: .infinity),
                                                options: .usesLineFragmentOrigin,
-                                               attributes: [ NSFontAttributeName : SWMenuCell.titleFont ],
+                                               attributes: [ NSFontAttributeName : kMenuFont ],
                                                context: nil).width + 20
             if itemWidth < kMenuMinWidth { itemWidth = kMenuMinWidth }
             totalWidth += itemWidth
@@ -156,8 +156,8 @@ class SWMenuController: UIView {
                                        width: contentViewWidth,
                                        height: kMenuHeight)
         
-        let targetPointInContentView = contentView.convert(targetPoint, from: nil)
-        arrowView.frame = CGRect(x: targetPointInContentView.x,
+        let targetPointInContentView = contentView.convert(targetPoint, from: UIApplication.shared.keyWindow)
+        arrowView.frame = CGRect(x: targetPointInContentView.x - kArrowWidth / 2,
                                  y: arrowDown ? kMenuHeight : 0,
                                  width: kArrowWidth,
                                  height: kArrowHeight)
@@ -175,15 +175,13 @@ class SWMenuController: UIView {
             var startIndex: Int = 0
             var endIndex: Int = 0
             var accumulatedWidth: CGFloat = 0
-            var accumulateSpace: Bool = false
             let tempList = menuSizeList
             for (i, menuSize) in tempList.enumerated() {
                 let pageMaxWidth = startIndex == 0 ? firstPageWidth : restPageWidth
                 accumulatedWidth += menuSize.width
-                if accumulateSpace {
+                if i != 0 {
                     accumulatedWidth += kMenuSpace
                 }
-                accumulateSpace = true
                 if accumulatedWidth > pageMaxWidth || i == menuSizeList.count - 1 {
                     if accumulatedWidth > pageMaxWidth {
                         accumulatedWidth -= menuSize.width + kMenuSpace
@@ -206,9 +204,8 @@ class SWMenuController: UIView {
                         var size = menuSizeList[index]
                         size.width += widthToAdd
                         menuSizeList[index] = size
-                        let button = UIButton(frame: CGRect(x: buttonX, y: 0, width: size.width, height: size.height))
-                        button.backgroundColor = .darkGray
-                        button.setTitleColor(.white, for: .normal)
+                        let button = produceMenuButton()
+                        button.frame = CGRect(x: buttonX, y: 0, width: size.width, height: size.height)
                         button.setTitle(menuItems[index].title, for: .normal)
                         pageView.addSubview(button)
                         menuButtons.append(button)
@@ -216,20 +213,38 @@ class SWMenuController: UIView {
                     }
                     menuContentView.addSubview(pageView)
                     menuPageViews.append(pageView)
-                    accumulatedWidth = 0
-                    accumulateSpace = false
+                    accumulatedWidth = menuSize.width
                     startIndex = endIndex
                 }
             }
         } else {
-            
-            
             scrollRightButton.isHidden = true
+            
+            let pageView = UIView(frame: CGRect(x: 0, y: 0, width: totalWidth, height: kMenuHeight))
+            var buttonX: CGFloat = 0
+            for (i, item) in menuItems.enumerated() {
+                let button = produceMenuButton()
+                button.frame = CGRect(x: buttonX, y: 0, width: menuSizeList[i].width, height: kMenuHeight)
+                button.setTitle(item.title, for: .normal)
+                pageView.addSubview(button)
+                menuButtons.append(button)
+                buttonX += menuSizeList[i].width + kMenuSpace
+            }
+            menuContentView.addSubview(pageView)
+            menuPageViews.append(pageView)
         }
     }
     
+    private func produceMenuButton() -> UIButton {
+        let button = UIButton()
+        button.backgroundColor = .darkGray
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = kMenuFont
+        return button
+    }
+    
     func setTargetRect(_ targetRect: CGRect, in targetView: UIView) {
-        let targetRectInWindow = targetView.convert(targetRect, to: nil)
+        let targetRectInWindow = targetView.convert(targetRect, to: UIApplication.shared.keyWindow)
         var statusBarHeight: CGFloat = 0
         if !UIApplication.shared.isStatusBarHidden {
             statusBarHeight = UIApplication.shared.statusBarFrame.height
