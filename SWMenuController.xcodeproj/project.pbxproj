@@ -14,6 +14,7 @@
 		4A54B89B1EB2EB05002245D7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A54B8991EB2EB05002245D7 /* LaunchScreen.storyboard */; };
 		4A54B8A31EB2ECB7002245D7 /* SWMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A54B8A21EB2ECB7002245D7 /* SWMenuController.swift */; };
 		4A54B8A51EB2ED4C002245D7 /* SWMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A54B8A41EB2ED4C002245D7 /* SWMenuItem.swift */; };
+		4A54B8A91EB8B23C002245D7 /* SWMenuArrow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A54B8A81EB8B23C002245D7 /* SWMenuArrow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		4A54B89C1EB2EB05002245D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A54B8A21EB2ECB7002245D7 /* SWMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SWMenuController.swift; sourceTree = "<group>"; };
 		4A54B8A41EB2ED4C002245D7 /* SWMenuItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SWMenuItem.swift; sourceTree = "<group>"; };
+		4A54B8A81EB8B23C002245D7 /* SWMenuArrow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SWMenuArrow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				4A54B8901EB2EB05002245D7 /* AppDelegate.swift */,
 				4A54B8921EB2EB05002245D7 /* ViewController.swift */,
 				4A54B8A21EB2ECB7002245D7 /* SWMenuController.swift */,
+				4A54B8A81EB8B23C002245D7 /* SWMenuArrow.swift */,
 				4A54B8A41EB2ED4C002245D7 /* SWMenuItem.swift */,
 				4A54B8941EB2EB05002245D7 /* Main.storyboard */,
 				4A54B8971EB2EB05002245D7 /* Assets.xcassets */,
@@ -144,6 +147,7 @@
 			files = (
 				4A54B8931EB2EB05002245D7 /* ViewController.swift in Sources */,
 				4A54B8A51EB2ED4C002245D7 /* SWMenuItem.swift in Sources */,
+				4A54B8A91EB8B23C002245D7 /* SWMenuArrow.swift in Sources */,
 				4A54B8911EB2EB05002245D7 /* AppDelegate.swift in Sources */,
 				4A54B8A31EB2ECB7002245D7 /* SWMenuController.swift in Sources */,
 			);

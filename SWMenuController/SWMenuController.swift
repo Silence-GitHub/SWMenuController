@@ -29,7 +29,11 @@ class SWMenuController: UIView {
     var menuItems: [SWMenuItem] = [] // all menu items
     
     private var targetPoint: CGPoint = .zero // in window
-    private var arrowDown: Bool = true
+    private var arrowDown: Bool = true {
+        willSet {
+            arrowView.arrowDown = newValue
+        }
+    }
     
     private var contentView: UIView!
     private var menuContentView: UIView!
@@ -38,7 +42,7 @@ class SWMenuController: UIView {
     private var menuButtons: [UIButton] = []
     private var scrollLeftButton: UIButton!
     private var scrollRightButton: UIButton!
-    private var arrowView: UIView!
+    private var arrowView: SWMenuArrow!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -98,11 +102,12 @@ class SWMenuController: UIView {
         }
         scrollRightButton.isEnabled = currentMenuPage != menuItems.count - 1
         scrollLeftButton.isHidden = currentMenuPage == 0
+        
+        updateArrowView()
     }
     
     private func setupArrowView() {
-        arrowView = UIView()
-        arrowView.backgroundColor = .blue
+        arrowView = SWMenuArrow()
         contentView.addSubview(arrowView)
     }
     
@@ -234,6 +239,7 @@ class SWMenuController: UIView {
             menuContentView.addSubview(pageView)
             menuPageViews.append(pageView)
         }
+        updateArrowView()
     }
     
     private func produceMenuButton() -> UIButton {
@@ -242,6 +248,35 @@ class SWMenuController: UIView {
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = kMenuFont
         return button
+    }
+    
+    private func updateArrowView() {
+        let pageView = menuPageViews[currentMenuPage]
+        pageView.subviews.forEach { (button) in
+            let buttonFrameInContentView = contentView.convert(button.frame, from: pageView)
+            let y = buttonFrameInContentView.minY - kArrowHeight
+            let height = kArrowHeight * 2 + buttonFrameInContentView.height
+            let leftFrame = CGRect(x: buttonFrameInContentView.minX - kMenuSpace,
+                                   y: y,
+                                   width: kMenuSpace,
+                                   height: height)
+            if leftFrame.intersects(arrowView.frame) {
+                let intersection = leftFrame.intersection(arrowView.frame)
+                arrowView.blankRect = arrowView.convert(intersection, from: contentView)
+                arrowView.setNeedsDisplay()
+                return
+            }
+            let rightFrame = CGRect(x: buttonFrameInContentView.maxX,
+                                    y: y,
+                                    width: kMenuSpace,
+                                    height: height)
+            if rightFrame.intersects(arrowView.frame) {
+                let intersection = rightFrame.intersection(arrowView.frame)
+                arrowView.blankRect = arrowView.convert(intersection, from: contentView)
+                arrowView.setNeedsDisplay()
+                return
+            }
+        }
     }
     
     func setTargetRect(_ targetRect: CGRect, in targetView: UIView) {
@@ -258,14 +293,17 @@ class SWMenuController: UIView {
             // Menu is at the top of target view
             // Arrow down
             targetPoint = CGPoint(x: x, y: targetRectInWindow.minY)
+            arrowDown = true
         } else if kMenuHeight + kArrowHeight <= UIScreen.main.bounds.height - targetRectInWindow.maxY {
             // Menu is at the bottom of target view
             // Arrow up
             targetPoint = CGPoint(x: x, y: targetRectInWindow.maxY)
+            arrowDown = false
         } else {
             // Menu is at the center of window
             // Arrow down
             targetPoint = CGPoint(x: screenBounds.width / 2, y: screenBounds.height / 2)
+            arrowDown = true
         }
     }
     

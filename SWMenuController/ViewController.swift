@@ -26,7 +26,7 @@ class ViewController: UIViewController {
         let item6 = SWMenuItem(title: "Search", action: #selector(menuItemAction))
         let item7 = SWMenuItem(title: "Delete", action: #selector(menuItemAction))
         menu.menuItems = [item, item2, item3, item4, item5, item6, item7]
-        menu.setTargetRect(CGRect(x: 50, y: 100, width: 100, height: 100), in: view)
+        menu.setTargetRect(CGRect(x: 75, y: 100, width: 100, height: 100), in: view)
         menu.setMenuVisible(true, animated: true)
     }
 
