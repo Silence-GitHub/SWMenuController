@@ -203,6 +203,7 @@ class SWMenuController: UIView {
             var startIndex: Int = 0
             var endIndex: Int = 0
             var accumulatedWidth: CGFloat = 0
+            var needToAddLast: Bool = false
             let tempList = menuWidthList
             for (i, menuWidth) in tempList.enumerated() {
                 let pageMaxWidth = startIndex == 0 ? firstPageWidth : restPageWidth
@@ -214,6 +215,9 @@ class SWMenuController: UIView {
                     if accumulatedWidth > pageMaxWidth {
                         accumulatedWidth -= menuWidth + kMenuSpace
                         endIndex = i
+                        if i == menuWidthList.count - 1 {
+                            needToAddLast = true
+                        }
                     } else {
                         endIndex = i + 1 // = count
                     }
@@ -231,7 +235,6 @@ class SWMenuController: UIView {
                     for index in startIndex..<endIndex {
                         var width = menuWidthList[index]
                         width += widthToAdd
-//                        menuWidthList[index] = width
                         let button = produceMenuButton()
                         button.frame = CGRect(x: buttonX, y: 0, width: width, height: kMenuHeight)
                         button.setTitle(menuItems[index], for: .normal)
@@ -244,6 +247,18 @@ class SWMenuController: UIView {
                     accumulatedWidth = menuWidth
                     startIndex = endIndex
                 }
+            }
+            if needToAddLast {
+                let pageView = UIView()
+                pageView.frame = CGRect(x: kScrollButtonWidth + kMenuSpace, y: 0, width: restPageWidth, height: kMenuHeight)
+                pageView.isHidden = true
+                let button = produceMenuButton()
+                button.frame = CGRect(x: 0, y: 0, width: restPageWidth, height: kMenuHeight)
+                button.setTitle(menuItems.last, for: .normal)
+                pageView.addSubview(button)
+                menuButtons.append(button)
+                menuContentView.addSubview(pageView)
+                menuPageViews.append(pageView)
             }
         } else {
             scrollRightButton.isHidden = true
