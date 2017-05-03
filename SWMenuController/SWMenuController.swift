@@ -43,7 +43,7 @@ class SWMenuController: UIView {
     
     private var contentView: UIView!
     private var menuContentView: UIView!
-    private var currentMenuPage: Int = 0
+    private var pageIndex: Int = 0
     private var menuPageViews: [UIView] = []
     private var menuButtons: [UIButton] = []
     private var scrollLeftButton: UIButton!
@@ -79,7 +79,17 @@ class SWMenuController: UIView {
     }
     
     @objc private func contentViewPanned(_ pan: UIPanGestureRecognizer) {
-        
+        switch pan.state {
+        case .ended:
+            let tx = pan.translation(in: contentView).x
+            if tx > 50 {
+                scrollButtonClicked(scrollLeftButton)
+            } else if tx < -50 {
+                scrollButtonClicked(scrollRightButton)
+            }
+        default:
+            break
+        }
     }
     
     private func setupScrollButtons() {
@@ -97,17 +107,17 @@ class SWMenuController: UIView {
     @objc private func scrollButtonClicked(_ button: UIButton) {
         switch button {
         case scrollRightButton:
-            if currentMenuPage + 1 > menuPageViews.count - 1 { return }
-            currentMenuPage += 1
+            if pageIndex + 1 > menuPageViews.count - 1 { return }
+            pageIndex += 1
         default:
-            if currentMenuPage - 1 < 0 { return }
-            currentMenuPage -= 1
+            if pageIndex - 1 < 0 { return }
+            pageIndex -= 1
         }
         for (i, pageView) in menuPageViews.enumerated() {
-            pageView.isHidden = i != currentMenuPage
+            pageView.isHidden = i != pageIndex
         }
-        scrollRightButton.isEnabled = currentMenuPage != menuItems.count - 1
-        scrollLeftButton.isHidden = currentMenuPage == 0
+        scrollRightButton.isEnabled = pageIndex != menuItems.count - 1
+        scrollLeftButton.isHidden = pageIndex == 0
         
         updateArrowView()
     }
@@ -143,7 +153,7 @@ class SWMenuController: UIView {
     }
     
     func update() {
-        currentMenuPage = 0
+        pageIndex = 0
         menuPageViews.forEach { $0.removeFromSuperview() }
         menuPageViews.removeAll()
         menuButtons.removeAll()
@@ -295,7 +305,7 @@ class SWMenuController: UIView {
     }
     
     private func updateArrowView() {
-        let pageView = menuPageViews[currentMenuPage]
+        let pageView = menuPageViews[pageIndex]
         for button in pageView.subviews {
             let buttonFrameInContentView = contentView.convert(button.frame, from: pageView)
             let y = buttonFrameInContentView.minY - kArrowHeight
