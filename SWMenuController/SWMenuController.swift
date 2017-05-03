@@ -24,9 +24,15 @@ private let kArrowMaxX: CGFloat = UIScreen.main.bounds.width - kContentViewLeftR
 private let kTargetPointMinX: CGFloat = kArrowMinX + kArrowWidth / 2
 private let kTargetPointMaxX: CGFloat = kArrowMaxX + kArrowWidth / 2
 
+protocol SWMenuControllerDelegate: class {
+    func menuController(_ menu: SWMenuController, didSelected index: Int)
+}
+
 class SWMenuController: UIView {
 
-    var menuItems: [SWMenuItem] = [] // all menu items
+    weak var delegate: SWMenuControllerDelegate?
+    
+    var menuItems: [String] = [] // all menu items
     
     private var targetPoint: CGPoint = .zero // in window
     private var arrowDown: Bool = true {
@@ -145,7 +151,7 @@ class SWMenuController: UIView {
         var menuWidthList: [CGFloat] = []
         var totalWidth: CGFloat = 0
         menuItems.forEach { (item) in
-            var title = item.title
+            var title = item
             if title.characters.count > kMenuMaxWordCount {
                 title = title.substring(to: title.endIndex)
             }
@@ -228,7 +234,7 @@ class SWMenuController: UIView {
 //                        menuWidthList[index] = width
                         let button = produceMenuButton()
                         button.frame = CGRect(x: buttonX, y: 0, width: width, height: kMenuHeight)
-                        button.setTitle(menuItems[index].title, for: .normal)
+                        button.setTitle(menuItems[index], for: .normal)
                         pageView.addSubview(button)
                         menuButtons.append(button)
                         buttonX += width + kMenuSpace
@@ -247,7 +253,7 @@ class SWMenuController: UIView {
             for (i, item) in menuItems.enumerated() {
                 let button = produceMenuButton()
                 button.frame = CGRect(x: buttonX, y: 0, width: menuWidthList[i], height: kMenuHeight)
-                button.setTitle(item.title, for: .normal)
+                button.setTitle(item, for: .normal)
                 pageView.addSubview(button)
                 menuButtons.append(button)
                 buttonX += menuWidthList[i] + kMenuSpace
@@ -263,7 +269,14 @@ class SWMenuController: UIView {
         button.backgroundColor = .darkGray
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = kMenuFont
+        button.addTarget(self, action: #selector(menuButtonClicked(_:)), for: .touchUpInside)
         return button
+    }
+    
+    @objc private func menuButtonClicked(_ button: UIButton) {
+        guard let index = menuButtons.index(of: button) else { return }
+        dismiss()
+        delegate?.menuController(self, didSelected: index)
     }
     
     private func updateArrowView() {
