@@ -116,7 +116,23 @@ class SWMenuController: UIView {
             update()
             UIApplication.shared.keyWindow?.addSubview(self)
         } else {
-            removeFromSuperview()
+            dismiss()
+        }
+    }
+    
+    override func didMoveToWindow() {
+        guard window != nil else { return }
+        contentView.alpha = 0
+        UIView.animate(withDuration: 0.25) { 
+            self.contentView.alpha = 1
+        }
+    }
+    
+    private func dismiss() {
+        UIView.animate(withDuration: 0.25, animations: { 
+            self.contentView.alpha = 0
+        }) { (_) in
+            self.removeFromSuperview()
         }
     }
     
@@ -311,7 +327,8 @@ class SWMenuController: UIView {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        removeFromSuperview()
+        print(#function)
+        dismiss()
     }
 
 }
