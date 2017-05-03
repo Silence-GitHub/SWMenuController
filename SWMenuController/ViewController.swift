@@ -13,10 +13,14 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Menu", style: .plain, target: self, action: #selector(showMenu))
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Menu", style: .plain, target: self, action: #selector(showMenu))
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped(_:))))
     }
     
-    func showMenu() {
+    @objc private func viewTapped(_ tap: UITapGestureRecognizer) {
+        let loc = tap.location(in: tap.view)
+        
         let menu = SWMenuController()
         let item = SWMenuItem(title: "Copy", action: #selector(menuItemAction))
         let item2 = SWMenuItem(title: "Paste", action: #selector(menuItemAction))
@@ -26,7 +30,7 @@ class ViewController: UIViewController {
         let item6 = SWMenuItem(title: "Search", action: #selector(menuItemAction))
         let item7 = SWMenuItem(title: "Delete", action: #selector(menuItemAction))
         menu.menuItems = [item, item2, item3, item4, item5, item6, item7]
-        menu.setTargetRect(CGRect(x: 75, y: 100, width: 100, height: 100), in: view)
+        menu.setTargetRect(CGRect(x: loc.x - 10, y: loc.y, width: 20, height: 10), in: view)
         menu.setMenuVisible(true, animated: true)
     }
 

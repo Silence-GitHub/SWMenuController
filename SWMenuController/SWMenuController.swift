@@ -18,7 +18,7 @@ private let kMenuMaxWordCount: Int = 15
 private let kMenuFont: UIFont = UIFont.systemFont(ofSize: 15)
 private let kArrowWidth: CGFloat = 19
 private let kArrowHeight: CGFloat = 9
-private let kContentViewArrowLeadingTrailingSpace: CGFloat = 5
+private let kContentViewArrowLeadingTrailingSpace: CGFloat = 8
 private let kArrowMinX: CGFloat = kContentViewLeftRightMargin + kContentViewArrowLeadingTrailingSpace // frame origin x
 private let kArrowMaxX: CGFloat = UIScreen.main.bounds.width - kContentViewLeftRightMargin - kContentViewArrowLeadingTrailingSpace - kArrowWidth // frame origin x
 private let kTargetPointMinX: CGFloat = kArrowMinX + kArrowWidth / 2
@@ -252,7 +252,7 @@ class SWMenuController: UIView {
     
     private func updateArrowView() {
         let pageView = menuPageViews[currentMenuPage]
-        pageView.subviews.forEach { (button) in
+        for button in pageView.subviews {
             let buttonFrameInContentView = contentView.convert(button.frame, from: pageView)
             let y = buttonFrameInContentView.minY - kArrowHeight
             let height = kArrowHeight * 2 + buttonFrameInContentView.height
@@ -263,7 +263,7 @@ class SWMenuController: UIView {
             if leftFrame.intersects(arrowView.frame) {
                 let intersection = leftFrame.intersection(arrowView.frame)
                 arrowView.blankRect = arrowView.convert(intersection, from: contentView)
-                arrowView.setNeedsDisplay()
+                arrowView.drawImage()
                 return
             }
             let rightFrame = CGRect(x: buttonFrameInContentView.maxX,
@@ -273,10 +273,12 @@ class SWMenuController: UIView {
             if rightFrame.intersects(arrowView.frame) {
                 let intersection = rightFrame.intersection(arrowView.frame)
                 arrowView.blankRect = arrowView.convert(intersection, from: contentView)
-                arrowView.setNeedsDisplay()
+                arrowView.drawImage()
                 return
             }
         }
+        arrowView.blankRect = .zero
+        arrowView.drawImage()
     }
     
     func setTargetRect(_ targetRect: CGRect, in targetView: UIView) {
