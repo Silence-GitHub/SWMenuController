@@ -33,6 +33,7 @@ class SWMenuController: UIView {
     weak var delegate: SWMenuControllerDelegate?
     
     var menuItems: [String] = [] // all menu items
+    var menuColor: UIColor = UIColor(red: 0.161, green: 0.161, blue: 0.161, alpha: 1)
     
     private var targetPoint: CGPoint = .zero // in window
     private var arrowDown: Bool = true {
@@ -94,12 +95,12 @@ class SWMenuController: UIView {
     
     private func setupScrollButtons() {
         scrollLeftButton = UIButton(frame: CGRect(x: 0, y: 0, width: kScrollButtonWidth, height: kMenuHeight))
-        scrollLeftButton.backgroundColor = .darkGray
+        scrollLeftButton.backgroundColor = menuColor
         scrollLeftButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollLeftButton)
         
         scrollRightButton = UIButton()
-        scrollRightButton.backgroundColor = .darkGray
+        scrollRightButton.backgroundColor = menuColor
         scrollRightButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollRightButton)
     }
@@ -124,6 +125,7 @@ class SWMenuController: UIView {
     
     private func setupArrowView() {
         arrowView = SWMenuArrow()
+        arrowView.color = menuColor
         contentView.addSubview(arrowView)
     }
     
@@ -291,7 +293,7 @@ class SWMenuController: UIView {
     
     private func produceMenuButton() -> UIButton {
         let button = UIButton()
-        button.backgroundColor = .darkGray
+        button.backgroundColor = menuColor
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = kMenuFont
         button.addTarget(self, action: #selector(menuButtonClicked(_:)), for: .touchUpInside)

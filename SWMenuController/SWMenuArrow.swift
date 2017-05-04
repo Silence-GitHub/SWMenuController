@@ -13,7 +13,7 @@ class SWMenuArrow: UIImageView {
     var arrowDown: Bool = true
     
     var blankRect: CGRect = .zero
-    var color: UIColor = .darkGray
+    var color: UIColor = UIColor(red: 0.161, green: 0.161, blue: 0.161, alpha: 1)
     
     func drawImage() {
         // To increase resolution, draw a large image
