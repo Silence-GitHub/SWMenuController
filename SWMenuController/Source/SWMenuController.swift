@@ -34,6 +34,7 @@ class SWMenuController: UIView {
     
     var menuItems: [String] = [] // all menu items
     var menuColor: UIColor = UIColor(red: 0.161, green: 0.161, blue: 0.161, alpha: 1)
+    var menuHighlightedColor: UIColor = UIColor(red: 0.659, green: 0.659, blue: 0.659, alpha: 1)
     
     private var targetPoint: CGPoint = .zero // in window
     private var arrowDown: Bool = true {
@@ -95,12 +96,12 @@ class SWMenuController: UIView {
     
     private func setupScrollButtons() {
         scrollLeftButton = UIButton(frame: CGRect(x: 0, y: 0, width: kScrollButtonWidth, height: kMenuHeight))
-        scrollLeftButton.backgroundColor = menuColor
+        scrollLeftButton.setBackgroundImage(#imageLiteral(resourceName: "Left_scroll_button"), for: .normal)
         scrollLeftButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollLeftButton)
         
         scrollRightButton = UIButton()
-        scrollRightButton.backgroundColor = menuColor
+        scrollRightButton.setBackgroundImage(#imageLiteral(resourceName: "Right_scroll_button"), for: .normal)
         scrollRightButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollRightButton)
     }
@@ -293,7 +294,8 @@ class SWMenuController: UIView {
     
     private func produceMenuButton() -> UIButton {
         let button = UIButton()
-        button.backgroundColor = menuColor
+        button.setBackgroundImage(UIImage(color: menuColor), for: .normal)
+        button.setBackgroundImage(UIImage(color: menuHighlightedColor), for: .highlighted)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = kMenuFont
         button.addTarget(self, action: #selector(menuButtonClicked(_:)), for: .touchUpInside)
@@ -371,4 +373,19 @@ class SWMenuController: UIView {
         dismiss()
     }
 
+}
+
+extension UIImage {
+    
+    public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) {
+        let rect = CGRect(origin: .zero, size: size)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0.0)
+        color.setFill()
+        UIRectFill(rect)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        guard let cgImage = image?.cgImage else { return nil }
+        self.init(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
+    }
 }
