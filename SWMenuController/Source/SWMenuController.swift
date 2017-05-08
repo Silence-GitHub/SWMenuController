@@ -34,7 +34,6 @@ class SWMenuController: UIView {
     
     var menuItems: [String] = [] // all menu items
     var menuColor: UIColor = UIColor(red: 0.161, green: 0.161, blue: 0.161, alpha: 1)
-    var menuHighlightedColor: UIColor = UIColor(red: 0.659, green: 0.659, blue: 0.659, alpha: 1)
     
     private var targetPoint: CGPoint = .zero // in window
     private var arrowDown: Bool = true {
@@ -97,11 +96,14 @@ class SWMenuController: UIView {
     private func setupScrollButtons() {
         scrollLeftButton = UIButton(frame: CGRect(x: 0, y: 0, width: kScrollButtonWidth, height: kMenuHeight))
         scrollLeftButton.setBackgroundImage(#imageLiteral(resourceName: "Left_scroll_button"), for: .normal)
+        scrollLeftButton.setBackgroundImage(#imageLiteral(resourceName: "Left_scroll_button"), for: .highlighted)
         scrollLeftButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollLeftButton)
         
         scrollRightButton = UIButton()
         scrollRightButton.setBackgroundImage(#imageLiteral(resourceName: "Right_scroll_button"), for: .normal)
+        scrollRightButton.setBackgroundImage(#imageLiteral(resourceName: "Right_scroll_button"), for: .highlighted)
+        scrollRightButton.setBackgroundImage(#imageLiteral(resourceName: "Right_scroll_button_disabled"), for: .disabled)
         scrollRightButton.addTarget(self, action: #selector(scrollButtonClicked(_:)), for: .touchUpInside)
         menuContentView.addSubview(scrollRightButton)
     }
@@ -118,7 +120,7 @@ class SWMenuController: UIView {
         for (i, pageView) in menuPageViews.enumerated() {
             pageView.isHidden = i != pageIndex
         }
-        scrollRightButton.isEnabled = pageIndex != menuItems.count - 1
+        scrollRightButton.isEnabled = pageIndex != menuPageViews.count - 1
         scrollLeftButton.isHidden = pageIndex == 0
         
         updateArrowView()
@@ -294,8 +296,7 @@ class SWMenuController: UIView {
     
     private func produceMenuButton() -> UIButton {
         let button = UIButton()
-        button.setBackgroundImage(UIImage(color: menuColor), for: .normal)
-        button.setBackgroundImage(UIImage(color: menuHighlightedColor), for: .highlighted)
+        button.backgroundColor = menuColor
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = kMenuFont
         button.addTarget(self, action: #selector(menuButtonClicked(_:)), for: .touchUpInside)
@@ -370,22 +371,18 @@ class SWMenuController: UIView {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         print(#function)
-        dismiss()
+        var shouldDismiss = true
+        if let touch = touches.first {
+            let loc = touch.location(in: self)
+            let menuContentLoc = menuContentView.convert(loc, from: self)
+            if menuContentView.bounds.contains(menuContentLoc) {
+                print("Touch in menu content view")
+                shouldDismiss = false
+            }
+        }
+        if shouldDismiss {
+            dismiss()
+        }
     }
 
-}
-
-extension UIImage {
-    
-    public convenience init?(color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) {
-        let rect = CGRect(origin: .zero, size: size)
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0.0)
-        color.setFill()
-        UIRectFill(rect)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        guard let cgImage = image?.cgImage else { return nil }
-        self.init(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
-    }
 }
