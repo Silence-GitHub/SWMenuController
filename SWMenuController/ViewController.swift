@@ -13,6 +13,7 @@ class ViewController: UIViewController, SWMenuControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .groupTableViewBackground
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(viewTapped(_:))))
     }
     
